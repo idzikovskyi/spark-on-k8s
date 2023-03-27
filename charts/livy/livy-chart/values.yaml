@@ -11,7 +11,7 @@ image:
   imageName: livy-0.7.0
   # imageName: livy-0.7.0-2.4.7
   # -- Overrides the image tag whose default is the chart appVersion.
-  tag: "202301161621R"
+  tag: "202301161621R-ezaf1046"
   # -- Image pull policy
   pullPolicy: Always
 
@@ -137,3 +137,6 @@ istio:
 
 # Add custom labels to livy server pod
 customLabels:
+
+# Available values: no | static | storageclass
+creteStaticVolume: no

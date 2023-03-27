@@ -15,10 +15,11 @@ spec:
   serviceName: {{ include "livy-chart.serviceName" . }}
   template:
     metadata:
-      {{ if .Values.istio.enable }}
       annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+        {{- if .Values.istio.enable }}
         proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
-      {{ end }}
+        {{- end }}
       labels:
       {{ if .Values.istio.enable }}
         sidecar.istio.io/inject: "true"
@@ -77,5 +78,3 @@ spec:
       {{- include "livy-chart.volumes" . | nindent 8 }}
       securityContext:
       {{- toYaml .Values.podSecurityContext | nindent 8 }}
-  volumeClaimTemplates:
-  {{- include "livy-chart.volumeClaimTemplates" . | nindent 4 }}

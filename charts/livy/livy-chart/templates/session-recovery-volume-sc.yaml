@@ -1,0 +1,37 @@
+{{- if eq .Values.creteStaticVolume "storageclass" }}
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ddff-shared
+provisioner: com.mapr.csi-kdf
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+parameters:
+  cldbHosts: 16.0.13.153:7222 16.0.13.152:7222 16.0.13.154:7222
+  cluster: ddff
+  csiNodePublishSecretName: hpe-ticket-secret-ddff
+  csiNodePublishSecretNamespace: hpe-csi
+  csiProvisionerSecretName: hpe-user-secret-ddff
+  csiProvisionerSecretNamespace: hpe-csi
+  mountPrefix: /exthcp-shared
+  namePrefix: bbb2a716-k8s-2-
+  platinum: "false"
+  restServers: mip-ap80-n4-vm02.mip.storage.hpecorp.net:10006
+  securityType: secure
+  rootdirperms: "777"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: session-recovery-pvc
+spec:
+  storageClassName: "ddff-shared"
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 512Mi
+{{- end }}

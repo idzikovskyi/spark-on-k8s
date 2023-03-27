@@ -164,10 +164,8 @@ return volume mounts for containers
 {{- if not .Values.tenantIsUnsecure }}
 {{ include "common.security.volumeMounts" . }}
 {{- end }}
-{{- if eq .Values.sessionRecovery.kind "pvc" }}
 - name: livy-sessionstore
   mountPath: "/opt/mapr/livy/livy-{{ include "livy-chart.livyVersion" . }}/session-store"
-{{- end }}
 {{- if and .Values.livySsl.enable .Values.livySsl.secretMountPath }}
 - name: livy-secret-ssl
   mountPath: {{ .Values.livySsl.secretMountPath }}
@@ -198,16 +196,11 @@ returns volumes for StatefulSet
     secretName: {{ include "livy-chart.secretName" . }}
     defaultMode: 420
     optional: false
+- name: livy-sessionstore
+  persistentVolumeClaim:
+    claimName: session-recovery-pvc
 {{- end }}
 
-{{/*
-returns volumeClaimTemplates for StatefulSet
-*/}}
-{{- define "livy-chart.volumeClaimTemplates" -}}
-{{- if and ( eq .Values.sessionRecovery.kind "pvc" ) ( .Values.sessionRecovery.pvcTemplate ) -}}
-- {{- toYaml .Values.sessionRecovery.pvcTemplate | nindent 2 }}
-{{- end }}
-{{- end }}
 
 {{/*
 Returns the pattern of user secret to generate by Livy server.

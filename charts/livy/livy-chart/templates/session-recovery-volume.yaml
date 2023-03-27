@@ -1,0 +1,47 @@
+{{- if eq .Values.creteStaticVolume "static" }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: session-recovery-pvc
+spec:
+  storageClassName: "" # Empty string must be explicitly set otherwise default StorageClass will be set
+  volumeName: session-recovery-pv
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 512Mi
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: session-recovery-pv
+spec:
+  storageClassName: ""
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 512Mi
+  claimRef:
+    name: session-recovery-pvc
+    namespace: {{ .Release.Namespace }}
+  csi:
+    volumeHandle: livy-session-recovery-handle
+    fsType: maprfs
+    driver: com.mapr.csi-kdf
+    nodePublishSecretRef:
+      name: hpe-ticket-secret-ddff
+      namespace: hpe-csi
+    volumeAttributes:
+      {{- $clusterCM := (lookup "v1" "ConfigMap" "ten" "cluster-cm") }}
+      {{- $cldbHosts := get $clusterCM.data "MAPR_CLDB_SC_HOSTS"}}
+      cldbHosts: "{{ $cldbHosts }}"
+      cluster: ddff
+      securityType: secure
+      volumePath: /apps/livy-session-recovery
+      volumePerms: "777"
+    volumeHandle: spark
+{{- end }}

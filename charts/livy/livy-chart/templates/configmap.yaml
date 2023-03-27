@@ -73,3 +73,6 @@ data:
     {{- end }}
 
     spark.ssl.enabled false
+
+  livy-env.sh: |
+    # sudo chmod 777 /opt/mapr/livy/livy-0.7.0ani/session-store

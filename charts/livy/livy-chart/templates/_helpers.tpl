@@ -216,3 +216,31 @@ Used as value of "livy.server.kubernetes.userSecretPattern" option of livy.conf.
 {{- define "livy-chart.userSecretPattern" -}}
 {{- printf "%s-user-secret-%%s" .Release.Name -}}
 {{- end }}
+
+
+{{/*
+Define PVC name for Spark History Server EventLog Storage
+*/}}
+{{- define "livy-chart.sparkhsRventlogStoragePvcName" -}}
+  {{- if and (.Values.sparkHistoryServer.integrate) }}
+    {{- if eq .Values.sparkHistoryServer.mode "maprfs" }}
+    {{- else if eq .Values.sparkHistoryServer.mode "pvc" }}
+      {{- .Values.sparkHistoryServer.pvcName }}
+    {{- else if eq .Values.sparkHistoryServer.mode "pvcLookup" }}
+      {{- $found := false }}
+      {{- range $i, $pvc := (lookup "v1" "PersistentVolumeClaim" .Release.Namespace "").items }}
+        {{- if not $found }}
+          {{- if eq (index $pvc.metadata.labels $.Values.sparkHistoryServer.pvcLabelKey) $.Values.sparkHistoryServer.pvcLabelValue }}
+            {{- $pvc.metadatan.name }}
+            {{- $found := true }}
+          {{- end }}
+        {{- end }}
+        {{- if not $found }}
+          {{- fail "Can not found PVC for Spark History Server EventLog Storage using label." }}
+        {{- end }}
+      {{- end }}
+    {{- else }}
+      {{- fail "Invalid value of '.Values.sparkHistoryServer.mode'." }}
+    {{- end }}
+  {{- end }}
+{{- end }}

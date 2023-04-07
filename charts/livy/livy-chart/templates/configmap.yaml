@@ -63,7 +63,7 @@ data:
     spark.kubernetes.container.image {{ include "livy-chart.fullDeImage" . }}
     {{- if .Values.sparkHistoryServer.integrate }}
     {{- if .Values.sparkHistoryServer.pvcName }}
-    spark.kubernetes.driver.volumes.persistentVolumeClaim.sparkhs-eventlog-storage.options.claimName {{ .Values.sparkHistoryServer.pvcName }}
+    spark.kubernetes.driver.volumes.persistentVolumeClaim.sparkhs-eventlog-storage.options.claimName {{ include "livy-chart.sparkhsRventlogStoragePvcName" . }}
     spark.kubernetes.driver.volumes.persistentVolumeClaim.sparkhs-eventlog-storage.mount.path {{ .Values.sparkHistoryServer.eventsDir }}
     {{- end }}
     spark.eventLog.dir {{ .Values.sparkHistoryServer.eventsDir }}

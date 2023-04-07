@@ -110,8 +110,12 @@ sessionRecovery:
 hiveSiteSource: ""
 
 sparkHistoryServer:
-  integrate: false
+  integrate: true
+  # Suported modes: pvc | pvcLookup | maprfs
+  mode: pvcLookup
   pvcName: ""
+  pvcLabelKey: app.kubernetes.io/name
+  pvcLabelValue: sparkhs
   eventsDir: "maprfs:///apps/spark/sampletenant"
 
 # Alpha feature
